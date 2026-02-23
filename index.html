@@ -1,0 +1,38 @@
+<script>
+    const apiURL = '/api/timetable';
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        const response = await fetch(apiURL);
+        const data = await response.json();
+        data.forEach(entry => populateCell(entry));
+    });
+
+    function populateCell(entry) {
+        const cellId = `${entry.day}-${entry.time}`;
+        const cell = document.getElementById(cellId);
+        if (cell) {
+            cell.innerHTML = `<strong>${entry.subject}</strong><br>${entry.staff}`;
+        }
+    }
+
+    document.getElementById('timetableForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const entry = {
+            subject: document.getElementById('subject').value,
+            staff: document.getElementById('staff').value,
+            time: document.getElementById('time').value,
+            day: document.getElementById('day').value
+        };
+
+        const response = await fetch(apiURL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(entry)
+        });
+
+        if (response.ok) {
+            populateCell(entry);
+            this.reset();
+        }
+    });
+</script>
